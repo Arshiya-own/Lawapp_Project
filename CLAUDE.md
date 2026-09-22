@@ -132,9 +132,13 @@ binaries, which Render's native Python runtime cannot install.
    `gemini-embedding-001` is the replacement because it is the only current model keeping *both* 768
    dimensions and parameter-based `RETRIEVAL_QUERY` / `RETRIEVAL_DOCUMENT` task types.
    `gemini-embedding-2` drops task-type parameters.
-2. **No corpus section exceeds 400 tokens** (longest ~227; 60 of 72 under 150). Every section emits
-   exactly one chunk → **72 chunks**, indices `001`–`006` per judgment. The overlap, sentence-boundary
-   and 500-cap branches never execute on real data — unit tests must use synthetic long sections.
+2. **No corpus section exceeds 400 tokens.** Measured with `cl100k_base` on 2026-09-22:
+   **longest is 171 tokens** (`j_0007` / `reasoning`), **67 of 72 chunks are under 150**, mean 53.4.
+   (Earlier estimates of "~227 / 60 of 72" were off; these are direct measurements from
+   `services/chunker.py`.) Every section emits exactly one chunk → **72 chunks**, indices
+   `001`–`006` per judgment. The overlap, sentence-boundary and 500-cap branches never execute on
+   real data — unit tests must use synthetic long sections. `tests/test_chunker.py` does exactly
+   that, and pins the 72-chunk structure against the real corpus.
 3. **Sample `chunk_id`s are not reproducible.** Only `j_0009_chunk_005` of 4 matches where its snippet
    actually lives. Sample matching is **structural** (field names, nesting, types), not byte-exact.
 4. **Both sample PDFs have a real text layer** (ReportLab, 4 pages, ~6.5K chars). `pypdf` suffices;
