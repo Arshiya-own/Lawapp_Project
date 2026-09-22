@@ -1,0 +1,23 @@
+# Build context is the repository root, so keep everything the image does not need
+# out of it — the provided package alone is several MB of PDFs and specs.
+.git/
+.venv/
+var/
+concept/
+frontend/
+auxillary/
+plan_to_do/
+eval/
+samples/
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite3
+eval_results*.json

@@ -1,0 +1,51 @@
+# Render blueprint (D-002: Render replaces Cloud Run).
+#
+# Docker runtime, not native Python: pytesseract and pdf2image need the tesseract and
+# poppler binaries, which Render's native environments cannot install.
+#
+# The build context is the repository root so the image can copy data/corpus_index.json
+# alongside backend/ — the committed vectors mean a cold start makes zero embedding
+# calls (D-005).
+#
+# Every secret is `sync: false`, so values are entered in the Render dashboard and never
+# committed. Committing any of them is an explicit disqualifier.
+
+services:
+  - type: web
+    name: minijurinex-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: JWT_SIGNING_SECRET
+        sync: false
+      - key: EVAL_TOKEN
+        sync: false
+
+      # Must match the deployed frontend exactly: it is both the CORS allow-list entry
+      # (01_architecture.md § 11 forbids a wildcard) and the post-login redirect target.
+      - key: FRONTEND_BASE_URL
+        sync: false
+
+      # Must also be registered as an authorised redirect URI on the Google OAuth
+      # client, matched by Google as an exact string.
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        sync: false
+
+      # Paths resolve against the repository root, which is /app in the image.
+      - key: CORPUS_INDEX_PATH
+        value: data/corpus_index.json
+      - key: UPLOAD_DIR
+        value: ./var/uploads
+      - key: SQLITE_PATH
+        value: ./var/lawapp.db
+      - key: JWT_EXPIRY_MINUTES
+        value: "60"
