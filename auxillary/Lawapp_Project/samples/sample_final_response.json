@@ -1,0 +1,75 @@
+{
+  "case_id": "case_a3f2b1e4-9c8d-4b7a-8e6f-1234567890ab",
+  "user_id": "user_c1d2e3f4-5a6b-7c8d-9e0f-abcdef123456",
+  "status": "processed",
+  "metadata": {
+    "parties": "Rahul Bhikulal Kasat vs. The State of Maharashtra",
+    "court": "Supreme Court of India",
+    "jurisdiction": "Criminal",
+    "sections_invoked": ["IPC 120B", "IPC 302", "IEA 65B"],
+    "synopsis": "SLP (Criminal) filed in Supreme Court challenging Bombay High Court's dismissal of regular bail for conviction under IPC 120B and 302."
+  },
+  "dimensions": [
+    {
+      "dimension_number": 1,
+      "query": "Non-compliance with Section 65B certificate for electronic evidence admissibility",
+      "rationale": "The case involves electronic evidence whose admissibility depends on strict compliance with Section 65B of the Indian Evidence Act."
+    },
+    {
+      "dimension_number": 2,
+      "query": "FIR initially registered for accidental death later converted to murder investigation",
+      "rationale": "The factual matrix shows the FIR was altered from accident to murder, a specific procedural scenario relevant to prosecution validity."
+    },
+    {
+      "dimension_number": 3,
+      "query": "Prosecution witness contradicting the established motive in a criminal conspiracy case",
+      "rationale": "A key witness demolishing the prosecution's motive affects conviction under Section 120B conspiracy charges."
+    }
+  ],
+  "retrieval": {
+    "results": [
+      {
+        "dimension_number": 1,
+        "query": "Non-compliance with Section 65B certificate for electronic evidence admissibility",
+        "judgments": [
+          {
+            "judgment_id": "j_0007",
+            "citation": "(2014) 10 SCC 473",
+            "case_name": "Anvar P.V. vs P.K. Basheer",
+            "court": "Supreme Court of India",
+            "court_tier": 1,
+            "date": "2014-09-18",
+            "chunk_id": "j_0007_chunk_004",
+            "snippet": "The court held that compliance with Section 65B(4) of the Indian Evidence Act is a pre-condition…",
+            "similarity_score": 0.842
+          }
+        ]
+      },
+      {
+        "dimension_number": 2,
+        "query": "FIR initially registered for accidental death later converted to murder investigation",
+        "judgments": [
+          {
+            "judgment_id": "j_0009",
+            "citation": "(2018) 5 SCC 788",
+            "case_name": "Rohit Sharma vs. State of Haryana",
+            "court": "Supreme Court of India",
+            "court_tier": 1,
+            "date": "2018-05-10",
+            "chunk_id": "j_0009_chunk_005",
+            "snippet": "Where an FIR is initially registered under Section 304A for accidental death and later…",
+            "similarity_score": 0.773
+          }
+        ]
+      },
+      {
+        "dimension_number": 3,
+        "query": "Prosecution witness contradicting the established motive in a criminal conspiracy case",
+        "judgments": []
+      }
+    ],
+    "retrieved_at": "2026-04-19T14:32:15Z"
+  },
+  "uploaded_at": "2026-04-19T14:30:00Z",
+  "processed_at": "2026-04-19T14:30:42Z"
+}

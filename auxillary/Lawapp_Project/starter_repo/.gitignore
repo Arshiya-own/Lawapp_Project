@@ -1,0 +1,55 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Service account keys
+*.json
+!package.json
+!tsconfig.json
+!tailwind.config.json
+!vercel.json
+!vite.config.json
+!samples/*.json
+!data/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+
+# ChromaDB persistence
+chroma_data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Eval outputs (candidates commit the final one; ignore intermediates)
+eval_results_draft*.json

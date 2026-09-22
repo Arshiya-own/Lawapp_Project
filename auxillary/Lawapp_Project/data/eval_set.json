@@ -1,0 +1,36 @@
+{
+  "eval_set_version": "1.0",
+  "description": "Ground-truth queries for evaluating Mini-JuriNex retrieval. Each query lists judgment IDs considered relevant based on the judgment's actual content. Candidates must not include this file content in any prompt.",
+  "queries": [
+    {
+      "eval_id": "eval_001",
+      "query": "Inadmissibility of electronic evidence without Section 65B certificate",
+      "relevant_judgment_ids": ["j_0007", "j_0011", "j_0004"],
+      "relevance_notes": "j_0007 (Anvar) is the foundational decision; j_0011 (Arjun Panditrao) clarifies and extends it; j_0004 (Suresh Patil, Bombay HC) applies the rule."
+    },
+    {
+      "eval_id": "eval_002",
+      "query": "Conversion of FIR from accident to murder under Section 302",
+      "relevant_judgment_ids": ["j_0005", "j_0009"],
+      "relevance_notes": "j_0005 (Ramesh Chandra Bhatt) holds conversion valid via supplementary chargesheet; j_0009 (Rohit Sharma) addresses procedural safeguards required after conversion."
+    },
+    {
+      "eval_id": "eval_003",
+      "query": "Motive demolished by prosecution witness in circumstantial evidence case",
+      "relevant_judgment_ids": ["j_0001"],
+      "relevance_notes": "j_0001 (Suresh Kumar) is directly on point — motive destroyed by prosecution's own witness in a circumstantial evidence case led to acquittal."
+    },
+    {
+      "eval_id": "eval_004",
+      "query": "Quashing of criminal proceedings arising from matrimonial or commercial disputes",
+      "relevant_judgment_ids": ["j_0008", "j_0012"],
+      "relevance_notes": "j_0008 (Priya Singh) addresses quashing of matrimonial 498A after settlement; j_0012 (Vikas Deshmukh) addresses quashing of commercial disputes cloaked as criminal complaints. Both invoke Section 482 CrPC."
+    },
+    {
+      "eval_id": "eval_005",
+      "query": "Rebuttal of statutory presumption in dowry death cases",
+      "relevant_judgment_ids": ["j_0003"],
+      "relevance_notes": "j_0003 (Kavita Sharma) addresses rebuttal of the Section 113B IEA presumption in dowry death cases."
+    }
+  ]
+}

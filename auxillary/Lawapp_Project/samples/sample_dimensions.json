@@ -1,0 +1,21 @@
+{
+  "case_id": "case_a3f2b1e4-9c8d-4b7a-8e6f-1234567890ab",
+  "dimensions": [
+    {
+      "dimension_number": 1,
+      "query": "Non-compliance with Section 65B certificate for electronic evidence admissibility",
+      "rationale": "The case involves electronic evidence whose admissibility depends on strict compliance with Section 65B of the Indian Evidence Act."
+    },
+    {
+      "dimension_number": 2,
+      "query": "FIR initially registered for accidental death later converted to murder investigation",
+      "rationale": "The factual matrix shows the FIR was altered from accident to murder, a specific procedural scenario relevant to prosecution validity."
+    },
+    {
+      "dimension_number": 3,
+      "query": "Prosecution witness contradicting the established motive in a criminal conspiracy case",
+      "rationale": "A key witness demolishing the prosecution's motive affects conviction under Section 120B conspiracy charges."
+    }
+  ],
+  "generated_at": "2026-04-19T14:31:00Z"
+}

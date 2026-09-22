@@ -1,0 +1,66 @@
+# Adapted from auxillary/Lawapp_Project/starter_repo/.gitignore
+# Change from the starter: the blanket `*.json` ignore (plus allow-list) was replaced
+# with targeted credential patterns. The blanket rule silently ignored eval_results.json,
+# tsconfig.node.json, tsconfig.app.json and package-lock.json. It existed to guard GCP
+# service-account keys, which this build does not use (D-001 / D-004 / D-006).
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Credential files (what the starter's `*.json` rule was actually guarding)
+service-account*.json
+*-credentials.json
+*_credentials.json
+gcp-*.json
+client_secret*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+
+# Local runtime state (D-001/D-004: local disk replaces GCS; SQLite replaces Firestore)
+var/
+uploads/
+*.db
+*.sqlite
+*.sqlite3
+
+# Eval outputs — the final eval_results.json IS committed; drafts are not
+eval_results_draft*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Interview revision notes — local working folder, not a submission artifact.
+# Uncomment to keep them out of the graded repo (see QUESTIONS.md).
+concept/
