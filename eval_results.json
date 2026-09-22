@@ -1,0 +1,126 @@
+{
+  "api_base_url": "http://127.0.0.1:8000/api/v1",
+  "eval_set_version": "1.0",
+  "summary": {
+    "num_queries": 5,
+    "mean_precision_at_5": 0.36,
+    "mean_recall_at_10": 1.0,
+    "mean_reciprocal_rank": 1.0
+  },
+  "per_query": [
+    {
+      "eval_id": "eval_001",
+      "query": "Inadmissibility of electronic evidence without Section 65B certificate",
+      "relevant_judgment_ids": [
+        "j_0011",
+        "j_0004",
+        "j_0007"
+      ],
+      "retrieved_judgment_ids": [
+        "j_0007",
+        "j_0004",
+        "j_0011",
+        "j_0003",
+        "j_0012",
+        "j_0008",
+        "j_0009",
+        "j_0001",
+        "j_0006",
+        "j_0005"
+      ],
+      "precision_at_5": 0.6,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "eval_id": "eval_002",
+      "query": "Conversion of FIR from accident to murder under Section 302",
+      "relevant_judgment_ids": [
+        "j_0009",
+        "j_0005"
+      ],
+      "retrieved_judgment_ids": [
+        "j_0005",
+        "j_0009",
+        "j_0012",
+        "j_0008",
+        "j_0001",
+        "j_0004",
+        "j_0002",
+        "j_0003",
+        "j_0010",
+        "j_0006"
+      ],
+      "precision_at_5": 0.4,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "eval_id": "eval_003",
+      "query": "Motive demolished by prosecution witness in circumstantial evidence case",
+      "relevant_judgment_ids": [
+        "j_0001"
+      ],
+      "retrieved_judgment_ids": [
+        "j_0001",
+        "j_0003",
+        "j_0005",
+        "j_0004",
+        "j_0009",
+        "j_0007",
+        "j_0012",
+        "j_0008",
+        "j_0002",
+        "j_0011"
+      ],
+      "precision_at_5": 0.2,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "eval_id": "eval_004",
+      "query": "Quashing of criminal proceedings arising from matrimonial or commercial disputes",
+      "relevant_judgment_ids": [
+        "j_0008",
+        "j_0012"
+      ],
+      "retrieved_judgment_ids": [
+        "j_0012",
+        "j_0008",
+        "j_0010",
+        "j_0005",
+        "j_0009",
+        "j_0003",
+        "j_0004",
+        "j_0006",
+        "j_0001",
+        "j_0007"
+      ],
+      "precision_at_5": 0.4,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "eval_id": "eval_005",
+      "query": "Rebuttal of statutory presumption in dowry death cases",
+      "relevant_judgment_ids": [
+        "j_0003"
+      ],
+      "retrieved_judgment_ids": [
+        "j_0003",
+        "j_0005",
+        "j_0001",
+        "j_0009",
+        "j_0004",
+        "j_0010",
+        "j_0012",
+        "j_0008",
+        "j_0002",
+        "j_0007"
+      ],
+      "precision_at_5": 0.2,
+      "recall_at_10": 1.0,
+      "reciprocal_rank": 1.0
+    }
+  ]
+}

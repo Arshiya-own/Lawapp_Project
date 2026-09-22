@@ -18,6 +18,8 @@ from google import genai
 from google.genai import types
 
 from config import (
+    DIMENSION_GENERATION_RETRIES,
+    DIMENSIONS_PER_CASE,
     GENERATION_MODEL,
     GENERATION_TEMPERATURE,
     get_settings,
@@ -48,6 +50,42 @@ Case text:
 ---
 {case_text}
 ---"""
+
+# --- 04_ai_ml_spec.md § 4.2, verbatim ---------------------------------------
+# The `//` comment inside the JSON block is part of the spec's prompt text and is
+# reproduced as-is rather than "corrected" into valid JSON.
+
+DIMENSION_GENERATION_PROMPT = """You are a senior Indian litigator identifying the distinct legal propositions and factual scenarios in a case that could yield relevant precedents.
+
+Case metadata:
+- Parties: {parties}
+- Court: {court}
+- Jurisdiction: {jurisdiction}
+- Sections invoked: {sections_invoked}
+- Synopsis: {synopsis}
+
+Generate exactly 3 "dimensional queries" for precedent retrieval. Each dimension must target a DISTINCT legal proposition or factual matrix — not a restatement of the case facts.
+
+Good dimension query: "Non-compliance with Section 65B certificate for electronic evidence"
+Bad dimension query: "Criminal case of Rahul Kasat involving murder"
+
+Return ONLY valid JSON:
+{{
+  "dimensions": [
+    {{
+      "dimension_number": 1,
+      "query": "string, 5-15 words, targets a specific legal proposition",
+      "rationale": "string, one sentence explaining why this dimension matters"
+    }},
+    // exactly 3 entries, dimension_number 1, 2, 3
+  ]
+}}"""
+
+DIMENSION_COUNT_REMINDER = (
+    "\n\nYour previous response did not contain exactly 3 dimensions. "
+    "Return ONLY the JSON object, containing exactly 3 entries in \"dimensions\", "
+    "numbered 1, 2 and 3."
+)
 
 CASE_TEXT_LIMIT = 12_000  # § 4.1: "truncated to the first 12,000 characters if longer"
 
@@ -140,3 +178,62 @@ def extract_metadata(case_text: str) -> dict:
         raise AppError(502, "upstream_error",
                        "Gemini returned a non-object for metadata.")
     return data
+
+
+def _valid_dimensions(payload: Any) -> Optional[list[dict]]:
+    """Accept only a list of exactly 3 entries that each carry query and rationale."""
+    if not isinstance(payload, dict):
+        return None
+    dimensions = payload.get("dimensions")
+    if not isinstance(dimensions, list) or len(dimensions) != DIMENSIONS_PER_CASE:
+        return None
+    if not all(isinstance(d, dict) and d.get("query") and d.get("rationale")
+               for d in dimensions):
+        return None
+    return dimensions
+
+
+def generate_dimensions(metadata: dict) -> list[dict]:
+    """Run the § 4.2 prompt. Exactly 3 dimensions, re-prompt once, then error.
+
+    § 4.2's strict rule: "If the model returns fewer or more, re-prompt once. If it
+    still misbehaves, raise an error. Do not silently fall back to 2 or 4." So a wrong
+    count is never trimmed or padded — the whole response is discarded and re-requested,
+    and a second failure is surfaced as 502 rather than quietly degraded.
+    """
+    sections = metadata.get("sections_invoked") or []
+    prompt = DIMENSION_GENERATION_PROMPT.format(
+        parties=metadata.get("parties", ""),
+        court=metadata.get("court", ""),
+        jurisdiction=metadata.get("jurisdiction", ""),
+        sections_invoked=", ".join(sections) if isinstance(sections, list) else sections,
+        synopsis=metadata.get("synopsis", ""),
+    )
+
+    last_count = None
+    for attempt in range(DIMENSION_GENERATION_RETRIES + 1):
+        payload = generate_json(prompt if attempt == 0
+                                else prompt + DIMENSION_COUNT_REMINDER)
+        dimensions = _valid_dimensions(payload)
+        if dimensions is not None:
+            # Renumber by position so the response always satisfies the 1/2/3 contract
+            # even when the model numbers them oddly. The count itself is never fixed up.
+            return [
+                {
+                    "dimension_number": index,
+                    "query": str(d["query"]),
+                    "rationale": str(d["rationale"]),
+                }
+                for index, d in enumerate(dimensions, 1)
+            ]
+
+        last_count = (len(payload.get("dimensions", []))
+                      if isinstance(payload, dict)
+                      and isinstance(payload.get("dimensions"), list) else None)
+        log_event(event="dimension_count_wrong", attempt=attempt, received=last_count)
+
+    raise AppError(
+        502, "upstream_error",
+        f"Gemini did not return exactly {DIMENSIONS_PER_CASE} dimensions after a retry.",
+        {"expected": DIMENSIONS_PER_CASE, "received": last_count},
+    )

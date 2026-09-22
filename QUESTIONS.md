@@ -157,4 +157,72 @@ because a reviewer testing with `sample_case_1.pdf` will only ever see tiers 1 a
 
 ---
 
+### [Q-005] Does the 0.65 similarity threshold apply to `/eval/retrieve`?
+
+**Spec reference:** `04_ai_ml_spec.md` § 5.2 step 3; `starter_repo/README.md` — "The
+`/eval/retrieve` Endpoint You Must Build"
+
+**Ambiguity:** § 5.2 step 3 applies a 0.65 threshold during vector search. But
+`/api/v1/eval/retrieve` is described only in the starter README, which is silent on the
+threshold while calling the endpoint "raw retrieval results... no dimension generation,
+no court-tier reranking. It exposes your retriever directly so we can evaluate it in
+isolation from the ranking logic."
+
+**Interpretations considered:**
+1. Apply the threshold, since it is part of § 5.2 vector search.
+2. Do not apply it — return the raw top-k by similarity.
+
+**Your choice:** Interpretation 2. No threshold, no tier reranking; results are collapsed
+to one entry per judgment and returned in descending similarity order.
+
+**Reasoning:** The README frames the endpoint as the retriever "in isolation from the
+ranking logic", and the threshold sits in § 5.2's filter stage alongside the collapse and
+ranking steps the README explicitly excludes. Thresholding would also corrupt the metrics
+the locked harness computes: `recall@10` and MRR assume a ranked list of length `top_k`,
+and silently returning three items where ten were requested would understate recall for
+reasons unrelated to retrieval quality.
+
+Collapsing to unique judgments *is* applied, because the harness scores distinct
+`judgment_id`s — returning several chunks of one judgment would spend top-k slots on
+duplicates and understate recall for a different artificial reason.
+
+**Confidence:** High.
+
+---
+
+### [Q-006] Precision@5 is capped by the eval set, not by retrieval quality
+
+**Spec reference:** `data/eval_set.json`; `eval/eval.py` `precision_at_k`
+
+**Ambiguity:** Not a spec ambiguity but a reporting one, logged because the headline
+number invites a wrong conclusion.
+
+Measured against the deployed retriever, mean **Precision@5 = 0.36**, which reads as poor
+in isolation. It is not: each eval query has only 1-3 relevant judgments, and
+`precision_at_k` divides hits by `k`, so the maximum attainable P@5 is
+`len(relevant) / 5`.
+
+| Query | relevant | P@5 | max possible |
+|---|---|---|---|
+| Section 65B certificate | 3 | 0.6 | 0.60 |
+| FIR conversion to murder | 2 | 0.4 | 0.40 |
+| Motive demolished | 1 | 0.2 | 0.20 |
+| Quashing of proceedings | 2 | 0.4 | 0.40 |
+| Dowry death presumption | 1 | 0.2 | 0.20 |
+
+**Every query scores its theoretical maximum.** Recall@10 is 1.0 and MRR is 1.0 across
+all five, and inspection of the returned order shows every relevant judgment ranked above
+every irrelevant one.
+
+**Your choice:** Report 0.36 exactly as `eval.py` prints it, and state the ceiling
+alongside it. No adjustment, no alternative metric, no re-tuning to inflate the number.
+
+**Reasoning:** Fabricated or massaged evaluation numbers are an explicit disqualifier, and
+the honest figure plus its context is more informative than the figure alone. The ceiling
+is a property of the eval set's small relevant sets, not of the retriever.
+
+**Confidence:** High — arithmetic, verified per query in `eval_results.json`.
+
+---
+
 *(Add further questions below. If you found no ambiguities, write "No unresolved ambiguities." — though we expect most candidates to find at least one.)*

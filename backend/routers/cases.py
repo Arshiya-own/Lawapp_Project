@@ -8,19 +8,24 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import ValidationError
 
 import db
-from config import ALLOWED_UPLOAD_MIME, MAX_UPLOAD_BYTES
+from config import ALLOWED_UPLOAD_MIME, MAX_UPLOAD_BYTES, OVER_RETRIEVAL_TOP_K
 from middleware import AppError, log_event
 from models.schemas import (
     CaseDetailResponse,
     CaseListItem,
     CaseListResponse,
+    Dimension,
+    DimensionResult,
+    DimensionsResponse,
     Metadata,
+    RetrievalResponse,
     UploadResponse,
     now_utc,
     utc_z,
 )
 from security import current_user
-from services import gemini_client, ocr, storage
+from services import embeddings, gemini_client, ocr, ranker, storage
+from services.vector_store import get_store
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 
@@ -117,3 +122,70 @@ def get_case(case_id: str,
         # 404 rather than 403 for another user's case (§ 11) — do not leak existence.
         raise AppError(404, "not_found", "Case not found.")
     return _case_detail(row)
+
+
+@router.post("/{case_id}/dimensions", response_model=DimensionsResponse)
+def generate_dimensions(case_id: str,
+                        user: sqlite3.Row = Depends(current_user)) -> DimensionsResponse:
+    """§ 5.4. Idempotent: a second call regenerates and overwrites."""
+    row = db.get_case(case_id, user["user_id"])
+    if row is None:
+        raise AppError(404, "not_found", "Case not found.")
+    if row["status"] != "processed":
+        raise AppError(422, "validation_error",
+                       "Case has not finished processing.",
+                       {"status": row["status"]})
+
+    metadata = _loads(row["metadata_json"])
+    if not metadata:
+        raise AppError(422, "validation_error", "Case has no extracted metadata.")
+
+    dimensions = gemini_client.generate_dimensions(metadata)
+    db.set_case_dimensions(case_id, dimensions)
+    log_event(event="dimensions_generated", case_id=case_id,
+              count=len(dimensions))
+
+    return DimensionsResponse(
+        case_id=case_id,
+        dimensions=[Dimension.model_validate(d) for d in dimensions],
+        generated_at=utc_z(now_utc()),
+    )
+
+
+@router.post("/{case_id}/retrieve", response_model=RetrievalResponse)
+def retrieve(case_id: str,
+             user: sqlite3.Row = Depends(current_user)) -> RetrievalResponse:
+    """§ 5.5. Embeds each stored dimension, searches, ranks, returns up to 5 each."""
+    row = db.get_case(case_id, user["user_id"])
+    if row is None:
+        raise AppError(404, "not_found", "Case not found.")
+
+    dimensions = _loads(row["dimensions_json"])
+    if not dimensions:
+        raise AppError(422, "dimensions_missing",
+                       "Dimensions have not been generated for this case.")
+
+    metadata = _loads(row["metadata_json"]) or {}
+    case_state = ranker.resolve_case_state(metadata.get("court"))
+    store = get_store()
+
+    results: list[DimensionResult] = []
+    for dimension in dimensions:
+        query = dimension["query"]
+        # One embedding call per dimension (§ 7) — never per chunk. The similarity
+        # maths below is local.
+        hits = store.search(embeddings.embed_query(query), OVER_RETRIEVAL_TOP_K)
+        ranked = ranker.rank(hits, case_state)
+        results.append(DimensionResult(
+            dimension_number=dimension["dimension_number"],
+            query=query,
+            judgments=[r.to_dict() for r in ranked],
+        ))
+
+    db.set_case_retrieval(case_id, [r.model_dump() for r in results])
+    log_event(event="retrieval_completed", case_id=case_id,
+              case_state=case_state,
+              counts=[len(r.judgments) for r in results])
+
+    return RetrievalResponse(case_id=case_id, results=results,
+                             retrieved_at=utc_z(now_utc()))

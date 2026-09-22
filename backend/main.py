@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import db
 from config import API_PREFIX, get_settings
 from middleware import RequestLoggingMiddleware, log_event, register_error_handlers
-from routers import auth, cases
+from routers import auth, cases, evaluation
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ register_error_handlers(app)
 
 app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(cases.router, prefix=API_PREFIX)
+app.include_router(evaluation.router, prefix=API_PREFIX)
 
 
 @app.get(f"{API_PREFIX}/health")
