@@ -108,4 +108,53 @@ placeholder prose rather than a binding value.
 
 ---
 
+### [Q-004] The uploaded case's state is rarely derivable from `court` alone
+
+**Spec reference:** `04_ai_ml_spec.md` § 5.3 — Ranking, court tier assignment;
+`04_ai_ml_spec.md` § 4.1 — Metadata Extraction Prompt
+
+**Ambiguity:** § 5.3 says tier 2 is "High Court of the same state as the uploaded case",
+and that the state "is determined by the case's `court` metadata", giving two example
+forms: `"Bombay High Court"` and `"Supreme Court of India with Maharashtra origin"`.
+
+But `court` is produced by the § 4.1 extraction prompt, which asks only for "the court
+name in which this case is filed (or being challenged from)" — it never asks for the
+originating state. In practice the model returns a bare court name. For
+`sample_case_1.pdf` it returns `"Supreme Court of India"`, with no origin, even though
+the case is plainly a Maharashtra matter (the respondent is "The State of Maharashtra"
+and the challenge is to a Bombay High Court order).
+
+So for any Supreme Court case the state is undetermined, § 5.3's fallback applies, and
+**tier 2 can never be assigned** — Bombay HC and Delhi HC both rank as tier 3.
+
+**Interpretations considered:**
+1. Use `court` only, exactly as § 5.3 states, and accept that the state is often
+   undetermined.
+2. Widen the search to other extracted metadata — `parties` and `synopsis` both mention
+   the state for this sample — so tier 2 becomes reachable.
+3. Change the § 4.1 prompt to ask for an origin state as well.
+
+**Your choice:** Interpretation 1. `resolve_case_state()` reads `court` and nothing else.
+
+**Reasoning:** § 5.3 names `court` as the source without qualification, and § 5.3 also
+supplies the behaviour for exactly this situation — "If the case's state cannot be
+determined, treat all non-SC High Courts as tier 3" — which would be redundant if the
+state were always derivable. That fallback existing is the strongest evidence the authors
+expected it to fire.
+
+Interpretation 3 is ruled out separately: § 4.1 prompts are used verbatim, so changing
+the prompt is not available. Interpretation 2 is defensible and would demonstrate tier 2
+more often, but it invents a resolution order the spec does not describe, and guessing a
+case's home state from party names would mis-fire whenever a state is a litigant in a
+matter originating elsewhere.
+
+The tier logic itself is fully implemented and tested for all four tiers
+(`tests/test_ranker.py`), so tier 2 is reachable the moment `court` names a High Court —
+it is the extraction that limits it, not the ranker.
+
+**Confidence:** Medium-high on the reading; the practical consequence is worth flagging
+because a reviewer testing with `sample_case_1.pdf` will only ever see tiers 1 and 3.
+
+---
+
 *(Add further questions below. If you found no ambiguities, write "No unresolved ambiguities." — though we expect most candidates to find at least one.)*
