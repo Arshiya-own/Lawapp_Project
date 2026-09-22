@@ -244,7 +244,7 @@ These cannot be automated — they need a human in a browser.
 |---|---|---|---|
 | 1 | Gemini API key | aistudio.google.com/apikey | Free, no card. Paste into `.env` as `GEMINI_API_KEY` |
 | 2 | OAuth 2.0 Web client | console.cloud.google.com | Free, no billing. Client ID + secret |
-| 3 | OAuth consent screen | same | External, Testing mode; add your own email as a test user |
+| 3 | OAuth consent screen | same | External, **Published** (not Testing) — the three scopes are non-sensitive so no Google verification is needed, and Testing mode would block the grader from signing in |
 | 4 | Redirect URIs | same | `http://localhost:8000/api/v1/auth/google/callback` now; Render URL on Day 3 |
 | 5 | Python 3.11 | python.org | Local machine has 3.14.6; spec binds 3.11 |
 | 6 | Tesseract + Poppler | local install | Only for local OCR fallback testing; Docker handles production |

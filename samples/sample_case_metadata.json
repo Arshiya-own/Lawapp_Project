@@ -1,0 +1,16 @@
+{
+  "case_id": "case_a3f2b1e4-9c8d-4b7a-8e6f-1234567890ab",
+  "user_id": "user_c1d2e3f4-5a6b-7c8d-9e0f-abcdef123456",
+  "status": "processed",
+  "metadata": {
+    "parties": "Rahul Bhikulal Kasat vs. The State of Maharashtra",
+    "court": "Supreme Court of India",
+    "jurisdiction": "Criminal",
+    "sections_invoked": ["IPC 120B", "IPC 302", "IEA 65B"],
+    "synopsis": "SLP (Criminal) filed in Supreme Court challenging Bombay High Court's dismissal of regular bail for conviction under IPC 120B and 302."
+  },
+  "dimensions": null,
+  "retrieval": null,
+  "uploaded_at": "2026-04-19T14:30:00Z",
+  "processed_at": "2026-04-19T14:30:42Z"
+}

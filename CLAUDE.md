@@ -94,13 +94,16 @@ Prompts in `04_ai_ml_spec.md` §4.1 and §4.2 are used **verbatim**.
 ## Stack
 
 Fixed by spec: FastAPI + Python 3.11 + Pydantic v2 + uvicorn; React 18 + TypeScript strict + Vite +
-Tailwind v3 + React Router v6 + React Query v5; Google OAuth 2.0 with PKCE; `gemini-2.5-flash`.
+Tailwind v3 + React Router v6 + React Query v5; Google OAuth 2.0 with PKCE; `gemini-2.5-flash`
+(**unavailable — see D-008**, actual: `gemini-3.6-flash`).
 
 Free-tier substitutions (the email required a free build; specs mandate paid GCP):
 
 | Spec | Actual | Deviation |
 |---|---|---|
 | `text-embedding-004` | `gemini-embedding-001` @ `output_dimensionality=768` | D-003 |
+| `gemini-2.5-flash` | `gemini-3.6-flash` (2.5 returns 404 for new keys) | D-008 |
+| `google-generativeai` SDK (starter) | `google-genai` | D-007 |
 | GCS + signed URLs | local disk + authed streaming endpoint | D-001, D-004 |
 | Cloud Run | Render (Docker) + Vercel | D-002 |
 | Index at container start | `index_corpus.py` offline, vectors committed | D-005 |
@@ -112,6 +115,18 @@ Backend **must** deploy as Docker on Render: `pytesseract` needs the `tesseract`
 binaries, which Render's native Python runtime cannot install.
 
 ## Established findings — do not re-derive
+
+0. **`gemini-2.5-flash` is 404 for new API keys** (verified 2026-09-22): *"no longer
+   available to new users. Please update your code to use models/gemini-3.6-flash."* It still
+   appears in `models.list()` — only a real `generateContent` call reveals it. Actual model is
+   `gemini-3.6-flash`, pinned (not `gemini-flash-latest`, which would drift and break §8
+   determinism). **`temperature=0.2` was tested and is still accepted on 3.x**, so that binding
+   number is unaffected. -> D-008
+
+0b. **`gemini-embedding-001` @ 768 dims returns norm ≈ 0.568, not 1.0** (measured on the live
+   key). Only its default 3072-dim output is pre-normalized. Every vector must be L2-normalized
+   before FAISS `IndexFlatIP`, on both the document and query side, or inner product is not
+   cosine and the 0.65 threshold is meaningless.
 
 1. **`text-embedding-004` was shut down 2026-01-14.** The spec binds a model that no longer exists.
    `gemini-embedding-001` is the replacement because it is the only current model keeping *both* 768

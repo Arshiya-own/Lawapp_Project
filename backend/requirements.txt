@@ -1,0 +1,30 @@
+# Python 3.11 (spec-bound). Pinned for reproducible Docker builds.
+
+# --- API ---
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+pydantic==2.13.5
+pydantic-settings==2.15.0
+python-multipart==0.0.32
+python-dotenv==1.2.3
+
+# --- Auth (OAuth code exchange server-side, 60-min JWT) ---
+httpx==0.28.1
+PyJWT==2.14.0
+
+# --- OCR: pypdf text layer first, pytesseract fallback (D-006) ---
+pypdf==6.19.0
+pytesseract==0.3.13
+pdf2image==1.17.0
+Pillow==12.3.0
+
+# --- Gemini: google-genai is the current SDK; google-generativeai is legacy ---
+google-genai==2.24.0
+
+# --- Retrieval: cl100k_base tokenizer, FAISS IndexFlatIP, L2 normalization ---
+tiktoken==0.14.0
+faiss-cpu==1.15.1
+numpy==2.4.6
+
+# --- Tests ---
+pytest==9.1.1

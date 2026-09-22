@@ -1,0 +1,67 @@
+{
+  "case_id": "case_a3f2b1e4-9c8d-4b7a-8e6f-1234567890ab",
+  "results": [
+    {
+      "dimension_number": 1,
+      "query": "Non-compliance with Section 65B certificate for electronic evidence admissibility",
+      "judgments": [
+        {
+          "judgment_id": "j_0007",
+          "citation": "(2014) 10 SCC 473",
+          "case_name": "Anvar P.V. vs P.K. Basheer",
+          "court": "Supreme Court of India",
+          "court_tier": 1,
+          "date": "2014-09-18",
+          "chunk_id": "j_0007_chunk_004",
+          "snippet": "The court held that compliance with Section 65B(4) of the Indian Evidence Act is a pre-condition to the admissibility of electronic records as secondary evidence. The certificate requirement is mandatory and cannot be dispensed with by oral evidence…",
+          "similarity_score": 0.842
+        },
+        {
+          "judgment_id": "j_0011",
+          "citation": "(2020) 7 SCC 1",
+          "case_name": "Arjun Panditrao Khotkar vs. Kailash Kushanrao Gorantyal",
+          "court": "Supreme Court of India",
+          "court_tier": 1,
+          "date": "2020-07-14",
+          "chunk_id": "j_0011_chunk_002",
+          "snippet": "A three-judge bench clarified the position on Section 65B certification, overruling prior confusion and holding that the certificate is required in all cases where electronic records are sought to be produced as evidence…",
+          "similarity_score": 0.819
+        },
+        {
+          "judgment_id": "j_0004",
+          "citation": "2022 SCC OnLine Bom 1234",
+          "case_name": "State of Maharashtra vs. Suresh Patil",
+          "court": "Bombay High Court",
+          "court_tier": 2,
+          "date": "2022-03-22",
+          "chunk_id": "j_0004_chunk_006",
+          "snippet": "The prosecution's failure to produce a Section 65B certificate for the CCTV footage rendered the electronic evidence inadmissible. The High Court held that the trial court erred in relying on this evidence without proper certification…",
+          "similarity_score": 0.781
+        }
+      ]
+    },
+    {
+      "dimension_number": 2,
+      "query": "FIR initially registered for accidental death later converted to murder investigation",
+      "judgments": [
+        {
+          "judgment_id": "j_0009",
+          "citation": "(2018) 5 SCC 788",
+          "case_name": "Rohit Sharma vs. State of Haryana",
+          "court": "Supreme Court of India",
+          "court_tier": 1,
+          "date": "2018-05-10",
+          "chunk_id": "j_0009_chunk_005",
+          "snippet": "Where an FIR is initially registered under Section 304A for accidental death and later the investigation reveals homicidal intent, the conversion to Section 302 requires a supplementary chargesheet…",
+          "similarity_score": 0.773
+        }
+      ]
+    },
+    {
+      "dimension_number": 3,
+      "query": "Prosecution witness contradicting the established motive in a criminal conspiracy case",
+      "judgments": []
+    }
+  ],
+  "retrieved_at": "2026-04-19T14:32:15Z"
+}
