@@ -95,7 +95,7 @@ class Settings(BaseSettings):
 
     upload_dir: Path = Path("./var/uploads")
     sqlite_path: Path = Path("./var/lawapp.db")
-    corpus_index_path: Path = Path("../data/corpus_index.json")
+    corpus_index_path: Path = Path("data/corpus_index.json")
 
     frontend_base_url: str = "http://localhost:5173"
 
