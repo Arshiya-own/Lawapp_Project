@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* § 7: focus rings must stay visible — never suppressed with outline: none. */
+@layer base {
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-slate-900;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
