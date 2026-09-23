@@ -9,6 +9,7 @@ anything sensitive.
 
 import secrets
 import sqlite3
+from typing import Any
 from urllib.parse import urlencode
 
 import httpx
@@ -85,8 +86,22 @@ def google_callback(code: str = Query(default=""),
                        {"reason": repr(exc)})
 
     if response.status_code != 200:
+        # Surface Google's own error code and description. Without them a failure here
+        # is undiagnosable: "invalid_client" (wrong client_id/secret pair),
+        # "invalid_grant" (code expired, already used, or PKCE verifier mismatch) and
+        # "redirect_uri_mismatch" all look identical from the status alone.
+        # These are error identifiers, not credentials, so they are safe to return.
+        detail: dict[str, Any] = {"status": response.status_code}
+        try:
+            body = response.json()
+            detail["google_error"] = body.get("error")
+            detail["google_error_description"] = body.get("error_description")
+        except ValueError:
+            detail["google_body"] = response.text[:200]
+
+        log_event(event="oauth_token_exchange_failed", **detail)
         raise AppError(502, "upstream_error", "Google rejected the authorization code.",
-                       {"status": response.status_code})
+                       detail)
 
     id_token = response.json().get("id_token")
     if not id_token:
