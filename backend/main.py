@@ -12,6 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import db
+import hashlib
 from config import API_PREFIX, get_settings
 from middleware import RequestLoggingMiddleware, log_event, register_error_handlers
 from routers import auth, cases, evaluation
@@ -21,8 +22,15 @@ from routers import auth, cases, evaluation
 async def lifespan(app: FastAPI):
     settings = get_settings()  # fails fast here if a secret is missing
     db.init_db()
-    log_event(event="startup", upload_dir=str(settings.upload_path),
-              db_path=str(settings.db_path))
+    log_event(
+    event="startup",
+    upload_dir=str(settings.upload_path),
+    db_path=str(settings.db_path),
+    oauth_secret_length=len(settings.google_oauth_client_secret),
+    oauth_secret_sha256=hashlib.sha256(
+        settings.google_oauth_client_secret.encode()
+    ).hexdigest(),
+)
     yield
 
 
